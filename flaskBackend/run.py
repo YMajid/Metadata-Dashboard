@@ -1,8 +1,5 @@
 import flask
 
-# if __name__ == '__main__':
-#     app.run(debug=True)
-
 app = flask.Flask("__main__")
 
 @app.route("/")
