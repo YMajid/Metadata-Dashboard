@@ -1,0 +1,17 @@
+body {
+    background-color: #ffffff;
+    color: #404345;
+    font-family: 'Roboto', sans-serif;
+    margin-top: 5rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #404345
+}
+
+.navbar-brand, .nav-link {
+    color: #404345;
+    font-weight: 500;
+}
+
+/* blue #0091ff */
