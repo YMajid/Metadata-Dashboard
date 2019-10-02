@@ -1,4 +1,16 @@
 import mysql.connector
+from dashboard import dashboard_db
+
+
+class Tables(dashboard_db.Model):
+    id = dashboard_db.Column(dashboard_db.Integer, primary_key=True)
+    source = dashboard_db.Column(dashboard_db.String(120), nullable=False)
+    table = dashboard_db.Column(dashboard_db.String(120), unique=True, nullable=False)
+    description = dashboard_db.Column(dashboard_db.String(max), unique=True, nullable=False)
+
+    def __repr__(self):
+        return f"User('{self.source}', '{self.table}', '{self.description}')"
+
 
 class Database():
     def __init__(self, host, user, password):
@@ -39,12 +51,11 @@ class Database():
         tables = self.show_tables()
         table_descriptions = {}
         column_descriptions = {}
-        query = 'describe {}'
+        query = 'show full columns from {}'
         for table in tables:
             cursor.execute(query.format(table))
             for column in cursor:
-                column_descriptions[column[0]] = column[1].split()[0]
-            table_descriptions[table]  = column_descriptions
+                column_descriptions[column[0]] = {'Type':column[1].split()[0], 'Key':column[4], 'Comment':column[8]}
+            table_descriptions[table] = column_descriptions
         cursor.close()
         return table_descriptions
-

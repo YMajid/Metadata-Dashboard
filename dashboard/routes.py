@@ -1,5 +1,5 @@
 import os
-from dashboard import app
+from dashboard import app, dashboard_db
 from flask import render_template, url_for, flash, redirect
 
 
