@@ -1,5 +1,5 @@
 import mysql.connector
-from dashboard import dashboard_db
+from . import dashboard_db
 
 
 class Tables(dashboard_db.Model):
@@ -9,7 +9,7 @@ class Tables(dashboard_db.Model):
     description = dashboard_db.Column(dashboard_db.String(max), unique=True, nullable=False)
 
     def __repr__(self):
-        return f"User('{self.source}', '{self.table}', '{self.description}')"
+        return f"Tables('{self.source}', '{self.table}', '{self.description}')"
 
 
 class Database():
@@ -20,42 +20,45 @@ class Database():
             password=password
         )
 
-    def show_databases(self):
+    def database_information(self):
+        information = {}
         cursor = self.db.cursor()
-        query = 'show databases;'
-        databases_names = []
-        cursor.execute(query)
+        query1 = 'show databases;'
+        cursor.execute(query1)
+        databases = []
         for i in cursor.fetchall():
-            databases_names.append(i[0])
+            databases.append(i[0])
         cursor.close()
-        return databases_names
-
-    def show_tables(self):
-        cursor = self.db.cursor()
-        databases = self.show_databases()
-        query_database = 'use {};'
-        query_tables = 'show full tables where Table_Type != "VIEW";'
-        tables_names = []
         for database in databases:
-            cursor.execute(query_database.format(database))
-            cursor.execute(query_tables)
-            tables = cursor.fetchall()
-            if len(tables) > 0:
-                for table in tables:
-                    tables_names.append('{}.{}'.format(database, table[0]))
-        cursor.close()
-        return tables_names
+            cursor = self.db.cursor()
+            query2 = 'use {};'
+            query3 = 'show full tables where Table_Type != "VIEW";'
+            cursor.execute(query2.format(database))
+            cursor.execute(query3)
+            tables = []
+            for j in cursor.fetchall():
+                tables.append(j[0])
+            cursor.close()
+            table_information = {}
+            for table in tables:
+                cursor = self.db.cursor()
+                query4 = 'show full columns from {}.{};'
+                cursor.execute(query4.format(database, table))
+                columns = cursor.fetchall()
+                cursor.close()
+                column_information = []
+                for column in columns:
+                    column_information.append({'Column':column[0], 'Type':column[1].split()[0], 'Comment':column[8]})
+                table_information[table] = column_information
+            information[database] = table_information
+        return information
 
-    def describe_tables(self):
-        cursor = self.db.cursor()
-        tables = self.show_tables()
-        table_descriptions = {}
-        column_descriptions = {}
-        query = 'show full columns from {}'
-        for table in tables:
-            cursor.execute(query.format(table))
-            for column in cursor:
-                column_descriptions[column[0]] = {'Type':column[1].split()[0], 'Key':column[4], 'Comment':column[8]}
-            table_descriptions[table] = column_descriptions
-        cursor.close()
-        return table_descriptions
+    def to_dashboard_db(self):
+        information = self.database_information()
+        # dashboard_db.session.query().delete()
+        for i in information:
+            for j in information[i]:
+                table = Tables(source=i, table=j, description=information[i][j])
+                dashboard_db.session.add(table)
+        dashboard_db.session.commit()
+
