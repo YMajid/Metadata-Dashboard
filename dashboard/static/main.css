@@ -2,16 +2,30 @@ body {
     background-color: #ffffff;
     color: #404345;
     font-family: 'Roboto', sans-serif;
-    margin-top: 5rem;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    color: #404345
+    color: #2a2b2b
 }
 
-.navbar-brand, .nav-link {
-    color: #404345;
+.navbar {
+    -webkit-box-shadow: 40px 0px 50px 0px rgba(0,0,0,0.1);
+    -moz-box-shadow: 40px 0px 50px 0px rgba(0,0,0,0.1);
+    box-shadow: 40px 0px 50px 0px rgba(0,0,0,0.1);
+    padding-left: 10%;
+    padding-right: 10%;
+    margin-bottom: 3%;
+    background-color: #ffffff;
+}
+
+.navbar-brand {
     font-weight: 500;
+    color: #404345 !important;
+}
+
+.nav-item {
+    padding-left: 5%;
+    padding-right: 5%;
 }
 
 /* blue #0091ff */
